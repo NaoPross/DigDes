@@ -1,6 +1,7 @@
 \section{State Machines}
 There are 3 types of state machines.
-\begin{center}
+\begin{figure}[h]
+  \centering
   \ttfamily
   \begin{tikzpicture}[
       node distance = 3mm,
@@ -61,4 +62,96 @@ There are 3 types of state machines.
         node[left] {inp} -- ++(1.5,0);
     \end{scope}
   \end{tikzpicture}
-\end{center}
+\end{figure}
+
+\subsection{Encoding the state}
+This is typical for Mealey and Moore machines.
+\begin{lstlisting}[language=vhdl]
+type state_type is (st_rst, st_a, st_b, st_c, ...);
+signal present_state, next_state : state_type;
+\end{lstlisting}
+The encoding of the state is left automatically to the synthesizer or
+configured in the graphic interface of the tool.  If a custom encoding is
+required (Medwedjew), adding the following generates a custom encoding.
+\begin{lstlisting}[language=vhdl]
+attribute enum_encoding : string;
+attribute enum_encoding of state_type:
+  type is "0001 0010 0100 ...";
+\end{lstlisting}
+
+Or alternatively a completely different approach is using a vector type.
+\begin{lstlisting}[language=vhdl]
+subtype state_type is bit_vector(3 downto 0);
+
+constant st_rst : state_type := "0001";
+constant st_a   : state_type := "0010";
+constant st_b   : state_type := "0100";
+...
+
+signal present_state, next_state : state_type;
+\end{lstlisting}
+
+\subsection{Updating the state register (\texttt{Z})}
+\begin{lstlisting}[language=vhdl]
+register_logic: process (clk, rst)
+begin
+  -- asynchronous reset
+  if rst = '1' then
+    present_state <= st_rst;
+
+  -- clock
+  elsif rising_edge(clk) then
+    present_state <= next_state;
+  end if;
+end process;
+\end{lstlisting}
+
+\subsection{Updating the state (\texttt{G})}
+\begin{lstlisting}[language=vhdl]
+next_state_logic:
+process (present_state, `\optionalph{inputs}`)
+begin
+  -- default value
+  next_state <= state_rst;
+
+  case present_state is
+    when st_rst =>
+      -- reset state logic
+      next_state <= `\reqph{state}`;
+
+    when st_a =>
+      -- logic using inputs
+      next_state <= `\reqph{state}`;
+
+    ...
+    when others => null;
+  end case;
+end process;
+\end{lstlisting}
+
+\subsection{Updating the output (\texttt{F})}
+Mealey
+\begin{lstlisting}[language=vhdl]
+output_logic:
+process (present_state, `\reqph{inputs}`)
+begin
+  -- logic with state and inputs
+  `\reqph{output}` <= `\reqph{expression}`;
+end process;
+\end{lstlisting}
+Moore
+\begin{lstlisting}[language=vhdl]
+output_logic: process (present_state)
+begin
+  case present_state is
+    when st_rst =>
+      `\reqph{output}` <= `\reqph{value}`;
+
+    ...
+  end case;
+end process;
+\end{lstlisting}
+Medwedjew
+\begin{lstlisting}[language=vhdl]
+output_logic: `\reqph{output}` <= present_state;
+\end{lstlisting}
