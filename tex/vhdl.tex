@@ -31,7 +31,13 @@ an \emph{architecture}. There can be multiple architectures for a single entity.
 
 \begin{center}
   \ttfamily
-  \begin{tikzpicture}
+  \begin{tikzpicture}[
+      node distance = 1mm,
+      pin/.style = {
+        draw = black, fill = white, circle, thick,
+        inner sep = 0pt, minimum size = 2mm,
+      },
+    ]
     \node[
       rectangle, draw = black, thick, fill = gray!20!white,
       minimum width = 4.5cm, minimum height = 4cm,
@@ -47,13 +53,13 @@ an \emph{architecture}. There can be multiple architectures for a single entity.
     }
 
     \foreach \x in {1,...,4}{
-      \draw[thick, <-]
+      \draw[thick]
         ($(entity.north west) - (0, .75 * \x)$) 
-        node (pinl\x) {} to ++(-.75, 0);
+        node[pin] {} to ++(-.75, 0) node (pinl\x) {};
 
-      \draw[thick, ->]
+      \draw[thick]
         ($(entity.north east) - (0, .75 * \x)$)
-        to ++(.75, 0) node (pinr\x) {} ;
+        node[pin] {} to ++(.5, 0) node (pinr\x) {} ;
     }
 
     \node[right] at (pinr1) {Pin};
@@ -156,7 +162,7 @@ type `\reqph{name}` is (`\reqph{identifier}`, `\reqph{identifier}`, `\ph{\ldots}
   \begin{tikzpicture}[
       node distance = 1mm,
       pin/.style = {
-        draw = black, fill = black, circle,
+        draw = black, fill = white, circle, thick,
         inner sep = 0pt, minimum size = 2mm,
       },
       component/.style = {
