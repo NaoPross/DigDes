@@ -71,7 +71,7 @@ type state_type is (st_rst, st_a, st_b, st_c, ...);
 signal present_state, next_state : state_type;
 \end{lstlisting}
 The encoding of the state is left automatically to the synthesizer or
-configured in the graphic interface of the tool.  If a custom encoding is
+configured in the graphical interface of the tool.  If a custom encoding is
 required (Medwedjew), adding the following generates a custom encoding.
 \begin{lstlisting}[language=vhdl]
 attribute enum_encoding : string;

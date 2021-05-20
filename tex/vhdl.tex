@@ -245,14 +245,15 @@ signal a, b : bit;
 data = (1 => a, 0 => b, others => '0')
 \end{lstlisting}
 
-\subsubsection{Seiective and conditional assignment}
+\subsubsection{Selective and conditional assignment}
 Higher level conditions can be written in two ways. 
 \begin{lstlisting}[language=vhdl]
 -- using when
 `\optionalph{label}:` y <= `\reqph{source}` when `\reqph{condition}` else
      `\reqph{source}` when `\reqph{condition}` else
      `\reqph{source}` when `\reqph{condition}`;
-
+\end{lstlisting}
+\begin{lstlisting}[language=vhdl]
 -- using with
 `\optionalph{label}`: with `\reqph{signal}` select `\reqph{dest}` <= 
   `\reqph{source}` when `\reqph{value}`,
@@ -261,7 +262,7 @@ Higher level conditions can be written in two ways.
 \end{lstlisting}
 
 \subsubsection{Components}
-External components that have been previously declared, can be used with the
+External components that have been previously declared can be used with the
 \vhdl{port map(}\reqph{assignments}\texttt{)} syntax. For example:
 \begin{lstlisting}[language=vhdl]
 -- declaration
@@ -274,7 +275,8 @@ end component flipflop;
 
 signal clk_int, a, b : in  std_ulogic;
 signal y, z          : out std_ulogic;
-
+\end{lstlisting}
+\begin{lstlisting}[language=vhdl]
 -- concurrent
 u1: flipflop
   port map(
@@ -288,8 +290,8 @@ u1: flipflop
 \end{lstlisting}
 
 \subsubsection{Processes}
-For more sophisticated logic, VHDL offers a way of writing sequential
-statements called \emph{processes}.
+For more sophisticated logic VHDL offers a way of writing sequential statements
+called \emph{processes}.
 \begin{lstlisting}[language=vhdl]
 `\optionalph{label}:` process (`\optionalph{sensitivity list}`)
 -- declarations
