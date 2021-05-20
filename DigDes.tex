@@ -3,7 +3,7 @@
 % !TeX root = DigDes.tex
 
 %% TODO: publish to CTAN
-\documentclass[]{tex/hsrzf}
+\documentclass[margin=normal]{tex/hsrzf}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Packages
@@ -13,8 +13,29 @@
 
 %% Language configuration
 \usepackage{polyglossia}
-% \setdefaultlanguage[variant=swiss]{german}
 \setdefaultlanguage{english}
+
+%% Pretty drawings
+\usepackage{tikz}
+
+\usetikzlibrary{calc}
+\usetikzlibrary{positioning}
+
+\usetikzlibrary{external}
+\tikzexternalize[
+  mode = graphics if exists,
+  figure list = true,
+  prefix=build/
+]
+
+%% Tweak lists
+\usepackage{enumitem}
+\setitemize{noitemsep}
+
+%% Nice tables
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
 
 %% License configuration
 \usepackage[
@@ -48,7 +69,8 @@
 \section{License}
 \doclicenseThis
 
-\newpage
+% \newpage
+\twocolumn
 
 % \section{Realisierungsformen digitaler Schaltungen}
 \input{tex/vhdl}

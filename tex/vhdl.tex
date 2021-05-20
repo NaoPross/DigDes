@@ -1,11 +1,69 @@
-\section{VHSIC Hardware Description Language (\texttt{VHDL})}
+\section[VHSIC Hardware Description Language (VHDL)]{
+  VHSIC Hardware Description Language (VHDL)
+  % \texttt{VHDL}: Very high-speed integrated circuits program
+  % Hardware Description Language
+}
 
 \newcommand{\ph}[1]{\textrm{\textit{#1}}}
 \newcommand{\reqph}[1]{\textrm{\textlangle\,\ph{#1}\,\textrangle}}
 \newcommand{\optionalph}[1]{\textrm{[\,\ph{#1}\,]}}
 
-\subsection{Entities and Architectures}
+\newcommand{\vhdl}[1]{\lstinline[language=vhdl]{#1}}
 
+\subsection{Basic syntax and identifiers}
+In VHDL an identifier is a case insensitive string composed of
+\texttt{A-Z a-z 0-9 \_} that
+\begin{itemize}
+  \item is not a keyword,
+  \item does not start with a number or \texttt{\_},
+  \item does not have two or more \texttt{\_} in a row.
+\end{itemize}
+Expressions are terminated by a semicolon \texttt{;}.
+Two dashes in a row cause the rest of the line to be interpreted as a comment.
+\begin{lstlisting}[language=vhdl]
+expression; -- comment
+\end{lstlisting}
+
+\subsection{Entities and Architectures}
+In VHDL the concept of \emph{entity} describes a black box of which only
+inputs and outputs are known. The internals of an entity are described through
+an \emph{architecture}. There can be multiple architectures for a single entity.
+
+\begin{center}
+  \ttfamily
+  \begin{tikzpicture}
+    \node[
+      rectangle, draw = black, thick, fill = gray!20!white,
+      minimum width = 4.5cm, minimum height = 4cm,
+    ] (entity) {};
+
+    \node[anchor = south west] at (entity.north west) {Entity};
+
+    \foreach \x in {1,2,3}{
+      \node[
+        rectangle, draw = black, thick, fill = white,
+        minimum width = 3.5cm, minimum height = .75cm,
+      ] (arch\x) at ($(entity.north) + (0, -1 * \x)$) {Architecture \x};
+    }
+
+    \foreach \x in {1,...,4}{
+      \draw[thick, <-]
+        ($(entity.north west) - (0, .75 * \x)$) 
+        node (pinl\x) {} to ++(-.75, 0);
+
+      \draw[thick, ->]
+        ($(entity.north east) - (0, .75 * \x)$)
+        to ++(.75, 0) node (pinr\x) {} ;
+    }
+
+    \node[right] at (pinr1) {Pin};
+  \end{tikzpicture}
+\end{center}
+
+Entities are declared with \vhdl{port()} that may contain a list of pins. Pins
+have a mode that can be \vhdl{in} input (only LHS), \vhdl{out} output (only
+RHS), \vhdl{inout} bidirectional or \vhdl{buffer} that can stay both on LHS and
+RHS. The usage of the latter is discourareged in favour of an internal signal.
 \begin{lstlisting}[language=vhdl]
 entity `\reqph{name}` is
   port(
@@ -14,6 +72,8 @@ entity `\reqph{name}` is
 end `\reqph{name}`;
 \end{lstlisting}
 
+Architectures are normally named after the design model, example are
+\texttt{behavioral}, \texttt{structural}, \texttt{selective}, etc.
 \begin{lstlisting}[language=vhdl]
 architecture `\reqph{name}` of `\reqph{entity}` is
   -- declare used variables, signals and component types
@@ -22,21 +82,245 @@ begin
 end `\optionalph{name}`;
 \end{lstlisting}
 
-\subsection{Declaration}
+\subsection{Electric types and Libraries}
+VHDL provides some types such as
+\begin{itemize}
+  \item \vhdl{boolean} true or false,
+  \item \vhdl{bit} 0 or 1,
+  \item \vhdl{bit_vector} one dimensional array of bits,
+  \item \vhdl{integer} 32-bit binary representation of a value.
+\end{itemize}
+From external libraries other types are available:
+\begin{itemize}
+  \item \vhdl{std_logic} advanced logic with 9 states,
+  \item \vhdl{std_ulogic}
+\end{itemize}
+The above are from the \vhdl{ieee.std_logic_1164} library, and can take the
+values described in the following table.
+\begin{center}
+  \begin{tabularx}{\linewidth}{>{\ttfamily}c l X}
+    \toprule
+    Value & Meaning & Usage \\
+    \midrule
+    U & Uninitialized  & In the simulator \\
+    X & Undefined      & Simulator sees a bus conflict \\
+    0 & Force to 0     & Low state of outputs \\
+    1 & Force to 1     & High state of outputs \\
+    Z & High Impedance & Three state ports \\
+    W & Weak Unknown   & Simulator sees weak a bus conflict \\
+    L & Weak Low       & Open source outputs with pull-down resistor \\
+    H & Weak High      & Open drain output with pull-up resistor \\
+    - & Don't care     & Allow minimization \\
+    \bottomrule
+  \end{tabularx}
+\end{center}
+%% TODO: copy conflict resolutiontable
+
+\subsection{Declarations} \label{sec:declarations}
+Before a \vhdl{begin} -- \vhdl{end} block, there is usually a list of declarations.
+A self evident examples are \emph{constants}.
+\begin{lstlisting}[language=vhdl]
+constant `\reqph{name}` : `\reqph{type}` := `\reqph{value}`;
+\end{lstlisting}
+
+Next, \emph{signals} and \emph{variables}. Signals is are wires, they can only be
+connected and do not have an initial state. Variables can be assigned like in
+software, but can cause the synthesization of an unwanted D-Latch.
+
 \begin{lstlisting}[language=vhdl]
 signal `\reqph{name}`, `\optionalph{name, \ldots}` : `\reqph{type}`;
-variable `\reqph{name}`, `\optionalph{name, \ldots}` : `\reqph{type}`;
 
+variable `\reqph{name}`, `\optionalph{name}`, `\optionalph{\ldots}` : `\reqph{type}`;
+variable `\reqph{name}` : `\reqph{type}` := `\reqph{expression}`;
+\end{lstlisting}
+
+For the hierarchical designs, when external entities are used, they must be
+declared as components. The \vhdl{port()} expression must match the entity
+declaration.
+\begin{lstlisting}[language=vhdl]
 component `\reqph{entity name}` is
   port(
-    `\ph{}`
+    `\optionalph{list of pins}`
   );
 end component;
 \end{lstlisting}
 
-\subsection{Concurrent Area}
-
+It is possible to create custom types, usually to create state machines.
 \begin{lstlisting}[language=vhdl]
-`\optionalph{label}`: `\reqph{signal}` <= `\ph{Expression}`
+type `\reqph{name}` is (`\reqph{identifier}`, `\reqph{identifier}`, `\ph{\ldots}`);
 \end{lstlisting}
 
+\subsection{Concurrent Area}
+\begin{center}
+  \ttfamily
+  \begin{tikzpicture}[
+      node distance = 1mm,
+      pin/.style = {
+        draw = black, fill = black, circle,
+        inner sep = 0pt, minimum size = 2mm,
+      },
+      component/.style = {
+        draw = black, thick, fill = white, rectangle,
+        minimum width = 18mm, minimum height = 12mm,
+        align = center,
+      },
+    ]
+
+    \node[
+      draw = black, rectangle, fill = gray!20!white, thick,
+      minimum width = .75\linewidth, minimum height = 4cm,
+    ] (arch) {};
+
+    \node[anchor = south west] at (arch.north west) {Architecture};
+
+    \node[pin] (clk) at ($(arch.north west) - (0,1)$) {};
+    \node[pin] (a) at ($(clk) - (0,1)$) {};
+    \node[pin] (b) at ($(a) - (0,1)$) {};
+    \node[pin] (y) at ($(arch.north east) - (0,1)$) {};
+
+    \node[left = of clk] {clk};
+    \node[left = of a] {a};
+    \node[left = of b] {b};
+    \node[right = of y] {y};
+
+    \node[component] (c1) at ($(clk) + (2,-.2)$) {Process};
+    \node[component] (c2) at ($(c1) + (.2,-1.8)$) {Component\\ Entity};
+    \node[
+      component, minimum width = 0mm, minimum height = 0mm,
+    ] (c3) at ($(c1) + (2.4,-.2)$) {Logic\\ Gate};
+
+    \draw[thick]
+      (clk)     to[out = 0, in = 180] ($(c1.west) + (0,.2)$)
+      (a)       to[out = 0, in = 180] ($(c1.west) - (0,.2)$)
+      (b)       to[out = 0, in = 180] (c2.west)
+
+      (c1.east) to[out = 0, in = 180] ($(c3.west) + (0,.2)$)
+      (c2.east) to[out = 0, in = 180] ($(c3.west) - (0,.2)$)
+      (c3.east) to[out = 0, in = 180] (y)
+      ;
+
+  \end{tikzpicture}
+\end{center}
+
+In the architecture between \vhdl{begin} and \vhdl{end}, the expressions
+are \emph{not} read sequentially, everything happens at the same time.
+Statements inside the concurrent area optionally have a label.
+\begin{lstlisting}[language=vhdl]
+`\optionalph{label}`: `\reqph{concurrent statement}`;
+\end{lstlisting}
+In the concurrent area signals, components and processes can be used to create
+a logic.
+
+\subsubsection{Signal assignment and simple gates}
+Signals are assigned using \vhdl{<=}.
+\begin{lstlisting}[language=vhdl]
+`\optionalph{label}`: `\reqph{signal}` <= `\reqph{expression}`;
+\end{lstlisting}
+Simple logic functions such as \vhdl{not}, \vhdl{and}, \vhdl{or}, \vhdl{xor},
+etc. can be used.
+\begin{lstlisting}[language=vhdl]
+ y <= (a and s) or (b and not(s));
+\end{lstlisting}
+
+\subsubsection{Aggregates}
+For vector types it is possible to create a value out of multiple signals.
+\begin{lstlisting}[language=vhdl]
+`\reqph{vector}` <= (
+  `\reqph{index}`  => `\reqph{source or value}`,
+  `\reqph{index}`  => `\reqph{source or value}`,
+  `\optionalph{\tt others}` => `\reqph{source or value}`
+);
+\end{lstlisting}
+\begin{lstlisting}[language=vhdl]
+-- declaration
+signal data : bit_vector(6 downto 0);
+signal a, b : bit;
+-- concurrent
+data = (1 => a, 0 => b, others => '0')
+\end{lstlisting}
+
+\subsubsection{Seiective and conditional assignment}
+Higher level conditions can be written in two ways. 
+\begin{lstlisting}[language=vhdl]
+-- using when
+`\optionalph{label}:` y <= `\reqph{source}` when `\reqph{condition}` else
+     `\reqph{source}` when `\reqph{condition}` else
+     `\reqph{source}` when `\reqph{condition}`;
+
+-- using with
+`\optionalph{label}`: with `\reqph{signal}` select `\reqph{dest}` <= 
+  `\reqph{source}` when `\reqph{value}`,
+  `\reqph{source}` when `\reqph{value}`,
+  `\reqph{source}` when others;
+\end{lstlisting}
+
+\subsubsection{Processes}
+For more sophisticated logic, VHDL offers a way of writing sequential
+statements called \emph{processes}.
+\begin{lstlisting}[language=vhdl]
+`\optionalph{label}:` process (`\optionalph{sensitivity list}`)
+-- declarations
+begin
+  -- sequential statements
+end process;
+\end{lstlisting}
+Processes have a \emph{sensitivity list} that could also be empty.  When a
+signal in the sensitivity list changes state, the process is executed.  In the
+case of an empty sensitivity list, the process runs continuously.  In the
+declaration, everything from \S\ref{sec:declarations} applies. For the
+sequential statements, the following applies:
+\begin{itemize}
+  \item Neither selective (\vhdl{with}) nor conditional (\vhdl{when}) should be used,
+    as there because there are new sequential constructs (\vhdl{if} and \vhdl{case}).
+  \item Signal assignments (with \vhdl{<=}) change their value
+    \emph{only at the end of the process}.
+  \item Variables on the other hand change as soon as they are assigned (with \vhdl{:=}).
+\end{itemize}
+And for good practice:
+\begin{itemize}
+  \item Before any \vhdl{if} or \vhdl{case} default values should be assigned.
+  \item Any signal on the RHS should be in the sensitivity list.
+  \item Processes with empty sensitivity lists should only be used for simulations.
+\end{itemize}
+
+The sequential replacements for \vhdl{with} and \vhdl{when} are in the listings below.
+\begin{lstlisting}[language=vhdl]
+if `\reqph{condition}` then
+  -- sequential statements 
+elsif `\reqph{condition}` then
+  -- sequential statements 
+else
+  -- sequential statements 
+end if;
+\end{lstlisting}
+\begin{lstlisting}[language=vhdl]
+case `\reqph{expression}` is
+  when `\reqph{choice}` =>
+    -- sequential statements
+  when `\reqph{choice}` =>
+    -- sequential statements
+  when others =>
+    -- sequential statements
+end case;
+\end{lstlisting}
+
+Processes can detect \emph{events} of signals. Typically this is used for
+clocks.
+\begin{lstlisting}[language=vhdl]
+process (clk)
+begin
+  -- rising edge
+  if clk'event and clk = '1' then
+    ... end if;
+  if rising_edge(clk) then
+    ... end if;
+
+  -- falling edge
+  if clk'event and clk = '0' then
+    ... end if;
+  if falling_edge(clk) then
+    ... end if;
+end process;
+\end{lstlisting}
+
+% vim:ts=2 sw=2 et:
