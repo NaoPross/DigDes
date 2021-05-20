@@ -1,0 +1,64 @@
+\section{State Machines}
+There are 3 types of state machines.
+\begin{center}
+  \ttfamily
+  \begin{tikzpicture}[
+      node distance = 3mm,
+      box/.style = {
+        draw = black, thick, fill = gray!20!white,
+        minimum width = 20mm, minimum height = 8mm,
+      }
+    ]
+
+    % mealey
+    \begin{scope}
+      \node[box] (G) {\large G};
+      \node[box, above = of G] (F) {\large F};
+      \node[box, below = of G] (Z) {\large Z};
+
+      \node[above = of F] {\large Mealey};
+
+      \draw[very thick, ->, hsr-blue] (F.east) -- ++(1,0) node[right] {oup};
+      \draw[very thick, ->, hsr-lakegreen] (G.east) -- ++(.5,0) |- (Z.east);
+      \draw[very thick, ->] (Z.west) -- ++(-.5,0) |- ($(G.west) - (0,.25)$);
+      \draw[very thick, ->] (G.west) ++ (-.5,-.25) |- ($(F.west) + (0,.25)$);
+
+      \draw[very thick, ->, hsr-mauve] ($(G.west) + (-1.5,.25)$)
+        node[left] {inp} -- ++(1.5,0);
+      \draw[very thick, ->, hsr-mauve] ($(G.west) + (-1,.25)$) |- ($(F.west) - (0,.25)$);
+    \end{scope}
+
+    % moore
+    \begin{scope}[yshift = -42mm]
+      \node[box] (G) {\large G};
+      \node[box, above = of G] (F) {\large F};
+      \node[box, below = of G] (Z) {\large Z};
+
+      \node[above = of F] {\large Moore};
+
+      \draw[very thick, ->, hsr-blue] (F.east) -- ++(1,0) node[right] {oup};
+      \draw[very thick, ->, hsr-lakegreen] (G.east) -- ++(.5,0) |- (Z.east);
+      \draw[very thick, ->] (Z.west) -- ++(-.5,0) |- ($(G.west) - (0,.25)$);
+      \draw[very thick, ->] (G.west) ++ (-.5,-.25) |- (F.west);
+
+      \draw[very thick, ->, hsr-mauve] ($(G.west) + (-1.5,.25)$)
+        node[left] {inp} -- ++(1.5,0);
+    \end{scope}
+
+    % Medwedjew
+    \begin{scope}[yshift = -80mm]
+      \node[box] (G) {\large G};
+      \node[box, below = of G] (Z) {\large Z};
+
+      \node[above = of G, yshift = 3mm] {\large Medwedjew};
+
+      \draw[very thick, ->, hsr-lakegreen] (G.east) -- ++(.5,0) |- (Z.east);
+      \draw[very thick, ->, hsr-blue] (Z.west) -- ++(-.5,0) |- ($(G.west) - (0,.25)$);
+      \draw[very thick, ->, hsr-blue] (G.west) ++ (-.5,-.25) |- ($(G.east) + (1,.75)$)
+        node[right] {oup};
+
+      \draw[very thick, ->, hsr-mauve] ($(G.west) + (-1.5,.25)$)
+        node[left] {inp} -- ++(1.5,0);
+    \end{scope}
+  \end{tikzpicture}
+\end{center}

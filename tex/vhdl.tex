@@ -150,10 +150,10 @@ component `\reqph{entity name}` is
   );
 end component;
 \end{lstlisting}
-
-It is possible to create custom types, usually to create state machines.
+For entities with multiple architectures, it is possible to choose which
+architecture is used with the following expression.
 \begin{lstlisting}[language=vhdl]
-type `\reqph{name}` is (`\reqph{identifier}`, `\reqph{identifier}`, `\ph{\ldots}`);
+for `\reqph{label or {\tt all}}`: use entity `\reqph{library}`.`\reqph{entity}`(`\reqph{architecture}`);
 \end{lstlisting}
 
 \subsection{Concurrent Area}
@@ -260,6 +260,33 @@ Higher level conditions can be written in two ways.
   `\reqph{source}` when others;
 \end{lstlisting}
 
+\subsubsection{Components}
+External components that have been previously declared, can be used with the
+\vhdl{port map(}\reqph{assignments}\texttt{)} syntax. For example:
+\begin{lstlisting}[language=vhdl]
+-- declaration
+component flipflop is
+  port(
+    clk, set, reset : in  std_ulogic,
+    Q, Qn           : out std_ulogic 
+  );
+end component flipflop;
+
+signal clk_int, a, b : in  std_ulogic;
+signal y, z          : out std_ulogic;
+
+-- concurrent
+u1: flipflop
+  port map(
+    clk   => clk_int,
+    set   => a,
+    reset => b,
+    Q     => y,
+    Qn    => z
+  );
+
+\end{lstlisting}
+
 \subsubsection{Processes}
 For more sophisticated logic, VHDL offers a way of writing sequential
 statements called \emph{processes}.
@@ -327,6 +354,12 @@ begin
   if falling_edge(clk) then
     ... end if;
 end process;
+\end{lstlisting}
+
+\subsection{Custom and arithmetic types}
+It is possible to create custom types, usually to create state machines.
+\begin{lstlisting}[language=vhdl]
+type `\reqph{name}` is (`\reqph{identifier}`, `\reqph{identifier}`, `\ph{\ldots}`);
 \end{lstlisting}
 
 % vim:ts=2 sw=2 et:
