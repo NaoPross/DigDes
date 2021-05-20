@@ -297,14 +297,14 @@ begin
   -- sequential statements
 end process;
 \end{lstlisting}
-Processes have a \emph{sensitivity list} that could also be empty.  When a
-signal in the sensitivity list changes state, the process is executed.  In the
-case of an empty sensitivity list, the process runs continuously.  In the
-declaration, everything from \S\ref{sec:declarations} applies. For the
-sequential statements, the following applies:
+Processes have a \emph{sensitivity list} that can be empty.  When a signal in
+the sensitivity list changes state, the process is executed.  With an empty
+sensitivity list, the process runs continuously.  In the declaration,
+everything from \S\ref{sec:declarations} applies. For the sequential
+statements, the following applies:
 \begin{itemize}
-  \item Neither selective (\vhdl{with}) nor conditional (\vhdl{when}) should be used,
-    as there because there are new sequential constructs (\vhdl{if} and \vhdl{case}).
+  \item Neither selective (\vhdl{with}) nor conditional (\vhdl{when}) should be used.
+    They are replaced with new sequential constructs (\vhdl{if} and \vhdl{case}).
   \item Signal assignments (with \vhdl{<=}) change their value
     \emph{only at the end of the process}.
   \item Variables on the other hand change as soon as they are assigned (with \vhdl{:=}).
@@ -337,8 +337,7 @@ case `\reqph{expression}` is
 end case;
 \end{lstlisting}
 
-Processes can detect \emph{events} of signals. Typically this is used for
-clocks.
+Processes can detect \emph{events} of signals. Typically it is used for clocks.
 \begin{lstlisting}[language=vhdl]
 process (clk)
 begin
