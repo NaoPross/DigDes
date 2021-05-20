@@ -1,3 +1,6 @@
+build/*
+!build/DigDes.pdf
+
 #Ignore files build by Visual Studio
 *.obj
 *.exe
@@ -46,8 +49,10 @@ _ReSharper*/
 # these rules might exclude image files for figures etc.
  *.ps
  *.eps
- *.pdf
+# *.pdf
  *.doc
+ *.figlist
+ *.xdv
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
@@ -209,7 +214,7 @@ TSWLatexianTemp*
 
 # KBibTeX
 *~[0-9]*
-*.pdf
+# *.pdf
 
 # Vim
 # Swap
