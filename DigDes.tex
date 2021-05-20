@@ -1,6 +1,6 @@
 % !TeX program = xelatex
 % !TeX encoding = utf8
-% !TeX root = Vorlage.tex
+% !TeX root = DigDes.tex
 
 %% TODO: publish to CTAN
 \documentclass[]{tex/hsrzf}
@@ -13,27 +13,28 @@
 
 %% Language configuration
 \usepackage{polyglossia}
-\setdefaultlanguage[variant=swiss]{german}
+% \setdefaultlanguage[variant=swiss]{german}
+\setdefaultlanguage{english}
 
 %% License configuration
 \usepackage[
     type={CC},
     modifier={by-nc-sa},
     version={4.0},
-    lang={german},
+    % lang={german},
 ]{doclicense}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Metadata
 
 \course{Elektrotechnik}
-\module{ModAbk}
-\semester{Fr\"uhlingssemester 2020}
+\module{DigDes}
+\semester{Spring Semester 2021}
 
-\authoremail{vname@hsr.ch}
-\author{\textsl{Vorname Name} -- \texttt{\theauthoremail}}
+\authoremail{naoki.pross@ost.ch}
+\author{\textsl{Naoki Pross} -- \texttt{\theauthoremail}}
 
-\title{\texttt{\themodule} Zusammenfassung}
+\title{\texttt{\themodule}: Digital Design}
 \date{\thesemester}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -44,15 +45,12 @@
 \maketitle
 \tableofcontents
 
-\section{Einf\"uhrung}
-\[
-  i\hbar \partial_t \left| \psi(t) \right\rangle 
-    = \hat{H} \left| \psi(t) \right\rangle
-\]
-
-
-\section{Lizenz}
+\section{License}
 \doclicenseThis
 
+\newpage
+
+% \section{Realisierungsformen digitaler Schaltungen}
+\input{tex/vhdl}
 
 \end{document}

@@ -1,0 +1,42 @@
+\section{VHSIC Hardware Description Language (\texttt{VHDL})}
+
+\newcommand{\ph}[1]{\textrm{\textit{#1}}}
+\newcommand{\reqph}[1]{\textrm{\textlangle\,\ph{#1}\,\textrangle}}
+\newcommand{\optionalph}[1]{\textrm{[\,\ph{#1}\,]}}
+
+\subsection{Entities and Architectures}
+
+\begin{lstlisting}[language=vhdl]
+entity `\reqph{name}` is
+  port(
+    `\reqph{pin}` : `\reqph{mode} \reqph{type}`;
+  );
+end `\reqph{name}`;
+\end{lstlisting}
+
+\begin{lstlisting}[language=vhdl]
+architecture `\reqph{name}` of `\reqph{entity}` is
+  -- declare used variables, signals and component types
+begin
+  -- concurrent area
+end `\optionalph{name}`;
+\end{lstlisting}
+
+\subsection{Declaration}
+\begin{lstlisting}[language=vhdl]
+signal `\reqph{name}`, `\optionalph{name, \ldots}` : `\reqph{type}`;
+variable `\reqph{name}`, `\optionalph{name, \ldots}` : `\reqph{type}`;
+
+component `\reqph{entity name}` is
+  port(
+    `\ph{}`
+  );
+end component;
+\end{lstlisting}
+
+\subsection{Concurrent Area}
+
+\begin{lstlisting}[language=vhdl]
+`\optionalph{label}`: `\reqph{signal}` <= `\ph{Expression}`
+\end{lstlisting}
+
