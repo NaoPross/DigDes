@@ -22,6 +22,7 @@ be ignored. This is much more typical and realistic, thus when unspecified,
 \begin{lstlisting}[language=vhdl]
 y <= `\reqph{expression}` after `\reqph{time}`;
 \end{lstlisting}
+%% TODO: tikz timing diagram
 
 \subsection{Generate stimuli}
 Simple stimuli (signals) are generated using processes. For example a clock
@@ -75,7 +76,7 @@ For loops are also available, and can be synthesised if they run over a finite
 range.
 \begin{lstlisting}[language=vhdl]
 `\optionalph{label}:` for `\reqph{parameter}` in `\reqph{range}` loop
-  -- sequentail statements
+  -- sequential statements
 end loop `\optionalph{label}`;
 \end{lstlisting}
 A concrete example:
@@ -89,7 +90,7 @@ signal a, b : std_ulogic_vector(n-1 downto 0);
 for i in 0 to 2**n -1 loop
   a <= std_ulogic_vector(
             to_unsigned(i, n));
-  for k in 0 to 2**n - 1 loop
+  for k in 0 to 2**n -1 loop
     b <= std_ulogic_vector(
               to_unsigned(k, n));
   end loop;
@@ -97,3 +98,14 @@ end loop;
 \end{lstlisting}
 
 \subsection{Assertions}
+Assertions are used write tests to check that a signal is in the correct state.
+\begin{lstlisting}[language=vhdl]
+`\optionalph{label}`: assert `\reqph{condition}` report `\reqph{string}` severity `\reqph{severity}`;
+\end{lstlisting}
+The \vhdl{report} and \vhdl{severity} are optional but strongly advised. The
+severity can take one of 4 values: \vhdl{note}, \vhdl{warning}, \vhdl{error},
+\vhdl{failure}. Simulations can be configured to stop in when an error of the
+desired severity occurrs. An example:
+\begin{lstlisting}[language=vhdl]
+assert (tb_y = '0') report "error at vector 11" severity error;
+\end{lstlisting}

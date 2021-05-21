@@ -18,6 +18,28 @@ Two dashes in a row cause the rest of the line to be interpreted as a comment.
 expression; -- comment
 \end{lstlisting}
 
+\subsection{Structure and Libraries}
+The VHDL code is organized into \emph{libraries} declared with the
+\vhdl{library} keyword. The library of your code is called \texttt{work},
+standard features (\texttt{bit}, \texttt{integer}, \ldots) are found in
+\texttt{std}, and IEEE standard parts are in \texttt{ieee}. \texttt{work} and
+\texttt{std} are always implicit and must not be declared.
+\begin{lstlisting}[language=vhdl]
+library `\reqph{library name}`;
+\end{lstlisting}
+Once declared a library is composed of \emph{packages}, which can contain
+elements (constants, entities, \ldots). To access the elements the syntax is 
+\begin{lstlisting}[language=vhdl]
+`\reqph{library}`.`\reqph{package}`.`\reqph{element}`;
+\end{lstlisting}
+To avoid having to write a long name every time it is possible to import names
+using
+\begin{lstlisting}[language=vhdl]
+use `\reqph{library}`.`\reqph{element or {\tt all}}`;
+use `\reqph{library}`.`\reqph{package}`.`\reqph{element or {\tt all}}`;
+\end{lstlisting}
+
+
 \subsection{Entities and Architectures}
 In VHDL the concept of \emph{entity} describes a black box of which only
 inputs and outputs are known. The internals of an entity are described through
@@ -73,8 +95,8 @@ entity `\reqph{name}` is
 end `\reqph{name}`;
 \end{lstlisting}
 
-Architectures are normally named after the design model, example are
-\texttt{behavioral}, \texttt{structural}, \texttt{selective}, etc.
+Architectures are normally named after the design model, examples are
+\texttt{behavioral}, \texttt{structural}.
 \begin{lstlisting}[language=vhdl]
 architecture `\reqph{name}` of `\reqph{entity}` is
   -- declare used variables, signals and component types
@@ -83,7 +105,7 @@ begin
 end `\optionalph{name}`;
 \end{lstlisting}
 
-\subsection{Electric types and Libraries}
+\subsection{Electric types}
 VHDL provides some types such as
 \begin{itemize}
   \item \vhdl{boolean} true or false,
@@ -94,7 +116,7 @@ VHDL provides some types such as
 From external libraries other types are available:
 \begin{itemize}
   \item \vhdl{std_logic} advanced logic with 9 states,
-  \item \vhdl{std_ulogic}
+  \item \vhdl{std_ulogic} same as the previous but \emph{unresolved}.
 \end{itemize}
 The above are from the \vhdl{ieee.std_logic_1164} library, and can take the
 values described in the following table.
@@ -115,7 +137,27 @@ values described in the following table.
     \bottomrule
   \end{tabularx}
 \end{center}
-%% TODO: copy conflict resolutiontable
+For the \emph{resolved} types, i.e. \vhdl{std_logic} types, when a signal is
+multiply driven the conflict is resolved according to the table below.
+Unresolved type will give a synthesization error.
+\begin{center}
+  \ttfamily
+  \begin{tabular}{c|ccccccccc}
+    \toprule
+      & U & X & 0 & 1 & Z & W & L & H & - \\
+    \midrule
+    U & U & U & U & U & U & U & U & U & U \\
+    X & U & X & X & X & X & X & X & X & X \\
+    0 & U & X & 0 & X & 0 & 0 & 0 & 0 & X \\
+    1 & U & X & X & 1 & 1 & 1 & 1 & 1 & X \\
+    Z & U & X & 0 & 1 & Z & W & L & H & X \\
+    W & U & X & 0 & 1 & W & W & W & W & X \\
+    L & U & X & 0 & 1 & L & W & L & W & X \\
+    H & U & X & 0 & 1 & H & W & W & H & X \\
+    - & U & X & X & X & X & X & X & X & X \\
+    \bottomrule
+  \end{tabular}
+\end{center}
 
 \subsection{Declarations} \label{sec:declarations}
 Before a \vhdl{begin} -- \vhdl{end} block, there is usually a list of declarations.
