@@ -4,12 +4,6 @@
   % Hardware Description Language
 }
 
-\newcommand{\ph}[1]{\textrm{\textit{#1}}}
-\newcommand{\reqph}[1]{\textrm{\textlangle\,\ph{#1}\,\textrangle}}
-\newcommand{\optionalph}[1]{\textrm{[\,\ph{#1}\,]}}
-
-\newcommand{\vhdl}[1]{\lstinline[language=vhdl]{#1}}
-
 \subsection{Basic syntax and identifiers}
 In VHDL an identifier is a case insensitive string composed of
 \texttt{A-Z a-z 0-9 \_} that
@@ -67,9 +61,10 @@ an \emph{architecture}. There can be multiple architectures for a single entity.
 \end{center}
 
 Entities are declared with \vhdl{port()} that may contain a list of pins. Pins
-have a mode that can be \vhdl{in} input (only LHS), \vhdl{out} output (only
-RHS), \vhdl{inout} bidirectional or \vhdl{buffer} that can stay both on LHS and
-RHS. The usage of the latter is discourareged in favour of an internal signal.
+have a mode that can be \vhdl{in} input (only LHS\footnote{Left hand side}),
+\vhdl{out} output (only RHS\footnote{Right hand side}), \vhdl{inout}
+bidirectional or \vhdl{buffer} that can stay both on LHS and RHS. The usage of
+the latter is discourareged in favour of an internal signal.
 \begin{lstlisting}[language=vhdl]
 entity `\reqph{name}` is
   port(
@@ -291,7 +286,7 @@ u1: flipflop
 
 \subsubsection{Processes}
 For more sophisticated logic VHDL offers a way of writing sequential statements
-called \emph{processes}.
+called \emph{process}.
 \begin{lstlisting}[language=vhdl]
 `\optionalph{label}:` process (`\optionalph{sensitivity list}`)
 -- declarations

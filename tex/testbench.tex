@@ -1,0 +1,99 @@
+\section{Testing}
+To simulate a digial circuit it is possible to write test benches using VHDL.
+The code in this section may no longer be synthetisable, and is usually
+written by a \emph{test designer}.
+
+\subsection{Simulator}
+VHDL simulates digital systems using \emph{delta cycles}.
+%% TODO: notes on how delta cycles work
+
+\subsection{Transport delay}
+To model a time delay of a signal there are two ways:
+\begin{lstlisting}[language=vhdl]
+y <= transport `\reqph{expression}` after `\reqph{time}`;
+y <= inertial `\reqph{expression}` after `\reqph{time}`;
+\end{lstlisting}
+When \vhdl{transport} is used, the output changes only exactly after the
+specified time, the simulator simply waits. With \vhdl{inertial}, the output is
+also delayed, but only if the input lasts more than the specified time.  This
+means that for example with a time of \vhdl{10 ns} a pulse of \vhdl{5 ns} will
+be ignored. This is much more typical and realistic, thus when unspecified,
+\vhdl{after} is interpreted as \vhdl{inertial ... after}.
+\begin{lstlisting}[language=vhdl]
+y <= `\reqph{expression}` after `\reqph{time}`;
+\end{lstlisting}
+
+\subsection{Generate stimuli}
+Simple stimuli (signals) are generated using processes. For example a clock
+signal done in three ways:
+\begin{lstlisting}[language=vhdl]
+-- declaration
+constant f : integer := 1000;
+constant T : time    := 1 sec/f;
+signal clk0, clk1, clk2 : std_ulogic;
+\end{lstlisting}
+\begin{lstlisting}[language=vhdl]
+-- concurrent
+clock0: process
+begin
+  clk <= '1'; wait for (T/2);
+  clk <= '0'; wait for (T/2);
+end process;
+
+clock1: process
+begin
+  clk1 <= '1';
+  loop
+    wait for (T/2);
+    clk1 <= not clk1;
+  end loop;
+end process;
+
+-- lazy way
+clock2: clk2 <= not clk2 after (T/2);
+\end{lstlisting}
+One time stimuli can be modelled using the following expression. Note that the
+time is absolute.
+\begin{lstlisting}[language=vhdl]
+tb_sig <= '0',
+  '1' after 20 ns,
+  '0' after 30 ns, -- 10 ns later
+  `\reqph{value}` after `\reqph{time}`;
+\end{lstlisting}
+Repeating sequences can be created using processes.
+\begin{lstlisting}[language=vhdl]
+sequence: process
+begin
+  tb_sig <= '0';
+  wait for 20 ns;
+  tb_sig <= '1';
+  wait for 10 ns;
+  ...
+end process;
+\end{lstlisting}
+For loops are also available, and can be synthesised if they run over a finite
+range.
+\begin{lstlisting}[language=vhdl]
+`\optionalph{label}:` for `\reqph{parameter}` in `\reqph{range}` loop
+  -- sequentail statements
+end loop `\optionalph{label}`;
+\end{lstlisting}
+A concrete example:
+\begin{lstlisting}[language=vhdl]
+-- declaration
+constant n : integer := 3;
+signal a, b : std_ulogic_vector(n-1 downto 0);
+\end{lstlisting}
+\begin{lstlisting}[language=vhdl]
+-- sequential
+for i in 0 to 2**n -1 loop
+  a <= std_ulogic_vector(
+            to_unsigned(i, n));
+  for k in 0 to 2**n - 1 loop
+    b <= std_ulogic_vector(
+              to_unsigned(k, n));
+  end loop;
+end loop;
+\end{lstlisting}
+
+\subsection{Assertions}
