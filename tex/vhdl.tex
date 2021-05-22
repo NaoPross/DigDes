@@ -139,7 +139,7 @@ values described in the following table.
 \end{center}
 For the \emph{resolved} types, i.e. \vhdl{std_logic} types, when a signal is
 multiply driven the conflict is resolved according to the table below.
-Unresolved type will give a synthesization error.
+Unresolved types will give a synthesization error.
 \begin{center}
   \ttfamily
   \begin{tabular}{c|ccccccccc}
@@ -158,6 +158,21 @@ Unresolved type will give a synthesization error.
     \bottomrule
   \end{tabular}
 \end{center}
+A good example is a tri-state bus: 
+\begin{lstlisting}[language=vhdl]
+architecture tristate of buscontrol is
+begin
+  bus_read: inp <= bus_io;
+
+  bus_write: process(enable, oup)
+  begin
+    bus_io <= (others => 'Z');
+    if enable = '1' then
+      bus_io <= oup;
+    end if;
+  end process;
+end architecture tristateout;
+\end{lstlisting}
 
 \subsection{Declarations} \label{sec:declarations}
 Before a \vhdl{begin} -- \vhdl{end} block, there is usually a list of declarations.
@@ -227,10 +242,10 @@ for `\reqph{label or {\tt all}}`: use entity `\reqph{library}`.`\reqph{entity}`(
     \node[right = of y] {y};
 
     \node[component] (c1) at ($(clk) + (2,-.2)$) {Process};
-    \node[component] (c2) at ($(c1) + (.2,-1.8)$) {Component\\ Entity};
+    \node[component] (c2) at ($(c1) + (.2,-1.8)$) {Component\\ (entity)};
     \node[
       component, minimum width = 0mm, minimum height = 0mm,
-    ] (c3) at ($(c1) + (2.4,-.2)$) {Logic\\ Gate};
+    ] (c3) at ($(c1) + (2.6,-.2)$) {Logic\\ Gate};
 
     \draw[thick]
       (clk)     to[out = 0, in = 180] ($(c1.west) + (0,.2)$)
@@ -278,6 +293,8 @@ For vector types it is possible to create a value out of multiple signals.
 -- declaration
 signal data : bit_vector(6 downto 0);
 signal a, b : bit;
+\end{lstlisting}
+\begin{lstlisting}[language=vhdl]
 -- concurrent
 data = (1 => a, 0 => b, others => '0')
 \end{lstlisting}
@@ -305,8 +322,8 @@ External components that have been previously declared can be used with the
 -- declaration
 component flipflop is
   port(
-    clk, set, reset : in  std_ulogic,
-    Q, Qn           : out std_ulogic 
+    clk, set, rst : in  std_ulogic,
+    Q, Qn         : out std_ulogic 
   );
 end component flipflop;
 
@@ -317,11 +334,11 @@ signal y, z          : out std_ulogic;
 -- concurrent
 u1: flipflop
   port map(
-    clk   => clk_int,
-    set   => a,
-    reset => b,
-    Q     => y,
-    Qn    => z
+    clk => clk_int,
+    set => a,
+    rst => b,
+    Q   => y,
+    Qn  => z
   );
 
 \end{lstlisting}
@@ -376,7 +393,8 @@ case `\reqph{expression}` is
 end case;
 \end{lstlisting}
 
-Processes can detect \emph{events} of signals. Typically it is used for clocks.
+Processes can detect \emph{attributes} of signals. Typically it is used for
+clocks. There are also other attributes such as \vhdl{s'stable(t)}.
 \begin{lstlisting}[language=vhdl]
 process (clk)
 begin
@@ -399,5 +417,56 @@ It is possible to create custom types, usually to create state machines.
 \begin{lstlisting}[language=vhdl]
 type `\reqph{name}` is (`\reqph{identifier}`, `\reqph{identifier}`, `\ph{\ldots}`);
 \end{lstlisting}
+
+\subsection{Pitfalls and RTL model}
+Coming from a programming language, a common pitfall is to write something like
+\begin{center}
+  \begin{minipage}{.4\linewidth}
+    \begin{lstlisting}[language=vhdl]
+-- wrong!!!
+y <= y xor a;
+    \end{lstlisting}
+  \end{minipage}
+  \begin{minipage}{.4\linewidth}
+    \centering
+    \ttfamily
+    \begin{tikzpicture}[
+        outer sep = 0mm, inner sep = 0mm,
+        comp/.style = {
+          rectangle, draw = black, thick, fill = gray!20!white,
+          minimum height = 1cm, minimum width = 1cm,
+        }
+      ]
+
+      \node[comp] (G) {=1};
+      \draw[thick] (G.west) ++(0,-.2) to ++(-1,0) node[left] {a};
+      \draw[thick] (G.west) ++(0,.2) 
+        to ++(-.5,0)
+        to ++(0,.8)
+        to ++(2,0)
+        to ++(0,-1) node[minimum size = 1mm, fill = black, circle] (n) {}
+        to ++(-.5,0);
+
+      \draw[thick] (n) to ++(.5,0) node[right] {y};
+
+      \draw[ultra thick, red] (G.north) ++(-.2,.2) to ++(.4,.6);
+    \end{tikzpicture}
+  \end{minipage}
+\end{center}
+but this will be synthesised into an oscillating circuit, that must be avoided
+at all costs. The correct way is to have a memory for the next state, with a
+logic separated into combinatorial and sequential parts.
+\begin{lstlisting}[language=vhdl]
+-- combinatorial
+y_next <= y xor a;
+-- sequential
+process (clk)
+begin
+  if rising_edge(clk) then
+    y <= y_next;
+  end if;
+end process;
+\end{lstlisting}
+This method is known as \emph{register transfer level} design.
 
 % vim:ts=2 sw=2 et:
