@@ -39,7 +39,6 @@ use `\reqph{library}`.`\reqph{element or {\tt all}}`;
 use `\reqph{library}`.`\reqph{package}`.`\reqph{element or {\tt all}}`;
 \end{lstlisting}
 
-
 \subsection{Entities and Architectures}
 In VHDL the concept of \emph{entity} describes a black box of which only
 inputs and outputs are known. The internals of an entity are described through
@@ -91,8 +90,10 @@ the latter is discourareged in favour of an internal signal.
 entity `\reqph{name}` is
   port(
     `\reqph{pin}` : `\reqph{mode} \reqph{type}`;
+    `\optionalph{more pins}`;
+    `\reqph{pin}` : `\reqph{mode} \reqph{type}`
   );
-end `\reqph{name}`;
+end entity `\optionalph{name}`;
 \end{lstlisting}
 
 Architectures are normally named after the design model, examples are
@@ -102,7 +103,7 @@ architecture `\reqph{name}` of `\reqph{entity}` is
   -- declare used variables, signals and component types
 begin
   -- concurrent area
-end `\optionalph{name}`;
+end architecture `\optionalph{name}`;
 \end{lstlisting}
 
 \subsection{Electric types}
@@ -332,7 +333,7 @@ signal y, z          : out std_ulogic;
 \end{lstlisting}
 \begin{lstlisting}[language=vhdl]
 -- concurrent
-u1: flipflop
+u1: component flipflop
   port map(
     clk => clk_int,
     set => a,
@@ -468,5 +469,78 @@ begin
 end process;
 \end{lstlisting}
 This method is known as \emph{register transfer level} design.
+
+\subsection{Generic Parameters}
+Sometimes a group of components have a very similar structure, so instead of
+rewriting multiple similar interfaces it is desirable to have \emph{parameters}
+and a \emph{generic} entity, for example in the case of a binary counter's
+range. To solve the problem using signals with conditional statements would
+generate unnecessary hardware, while constants cannot change the entity's port.
+Thus there is a syntax:
+\begin{lstlisting}[language=vhdl]
+generic(
+  `\reqph{param name}` : `\reqph{type}` := `\reqph{initial value}`;
+  `\optionalph{more parameters}`;
+  `\reqph{param name}` : `\reqph{type}` := `\reqph{initial value}`
+);
+\end{lstlisting}
+that has affects at \emph{synthesization time}.
+
+\subsubsection{Generic entity and declaration}
+Entities are parametrized as follows.
+\begin{lstlisting}[language=vhdl]
+entity `\reqph{name}` is
+  generic(`\reqph{parameters}`);
+  port(`\reqph{pins}`);
+end entity `\reqph{name}`;
+\end{lstlisting}
+For example:
+\begin{lstlisting}[language=vhdl]
+entity counter is
+  generic(CNT_MAX : natural := 127);
+  port(
+    clk, rst, ena : in std_logic;
+    -- adjust to a power of 2
+    count : out std_logic_vector(
+      (natural(ceil(
+        log2(real(CNT_MAX +1)))) -1)
+        downto 0);
+end entity;
+\end{lstlisting}
+And in the architecture it is possible to access generic values in a similary
+way. Another example is a clock divider.
+\begin{lstlisting}[language=vhdl]
+entity clockdivider is
+  generic(DIV_FACTOR : natural := 128);
+  port(...);
+end entity;
+
+architecture RTL of clockdivider is
+  signal cnt, cnt_next : natural range 0 to (DIV_FACTOR -1);
+  ...
+\end{lstlisting}
+
+\subsubsection{Generic mapping (Concurrent Area)}
+To map a generic entity into a structural design the syntax is extended
+accordingly with \vhdl{generic map()}.
+\begin{lstlisting}[language=vhdl]
+-- definition
+component `\reqph{generic entity}` is
+  generic(`\reqph{parameters}`);
+  port(`\reqph{pins}`);
+end component;
+\end{lstlisting}
+\begin{lstlisting}[language=vhdl]
+`\optionalph{label}`: component `\reqph{generic component}`
+  generic map(
+    `\reqph{parameter}` => `\reqph{constant or parameter}`,
+    ...
+  );
+  port map(
+    `\reqph{pin}` => `\reqph{signal or pin}`, 
+    ...
+  );
+
+\end{lstlisting}
 
 % vim:ts=2 sw=2 et:
