@@ -47,13 +47,13 @@ an \emph{architecture}. There can be multiple architectures for a single entity.
 \begin{figure}[h]
   \centering
   \begin{tikzpicture}[
+      font = \ttfamily,
       node distance = 1mm,
       pin/.style = {
         draw = black, fill = white, circle, thick,
         inner sep = 0pt, minimum size = 2mm,
       },
     ]
-    \ttfamily
     \node[
       rectangle, draw = black, thick, fill = gray!20!white,
       minimum width = 4.5cm, minimum height = 4cm,
@@ -227,6 +227,7 @@ for `\reqph{label or {\tt all}}`: use entity `\reqph{library}`.`\reqph{entity}`(
 \begin{figure}[h]
   \centering
   \begin{tikzpicture}[
+      font = \ttfamily,
       node distance = 1mm,
       pin/.style = {
         draw = black, fill = white, circle, thick,
@@ -238,7 +239,6 @@ for `\reqph{label or {\tt all}}`: use entity `\reqph{library}`.`\reqph{entity}`(
         align = center,
       },
     ]
-    \ttfamily
 
     \node[
       draw = black, rectangle, fill = gray!20!white, thick,
@@ -448,8 +448,8 @@ y <= y xor a;
   \end{minipage}
   \begin{minipage}{.4\linewidth}
     \centering
-    \ttfamily
     \begin{tikzpicture}[
+        font = \ttfamily,
         outer sep = 0mm, inner sep = 0mm,
         comp/.style = {
           rectangle, draw = black, thick, fill = gray!20!white,
