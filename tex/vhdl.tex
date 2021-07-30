@@ -44,8 +44,8 @@ In VHDL the concept of \emph{entity} describes a black box of which only
 inputs and outputs are known. The internals of an entity are described through
 an \emph{architecture}. There can be multiple architectures for a single entity.
 
-\begin{center}
-  \ttfamily
+\begin{figure}[h]
+  \centering
   \begin{tikzpicture}[
       node distance = 1mm,
       pin/.style = {
@@ -53,6 +53,7 @@ an \emph{architecture}. There can be multiple architectures for a single entity.
         inner sep = 0pt, minimum size = 2mm,
       },
     ]
+    \ttfamily
     \node[
       rectangle, draw = black, thick, fill = gray!20!white,
       minimum width = 4.5cm, minimum height = 4cm,
@@ -79,7 +80,8 @@ an \emph{architecture}. There can be multiple architectures for a single entity.
 
     \node[right] at (pinr1) {Pin};
   \end{tikzpicture}
-\end{center}
+  \caption{An entity is a black box, that can have multiple architectures.}
+\end{figure}
 
 Entities are declared with \vhdl{port()} that may contain a list of pins. Pins
 have a mode that can be \vhdl{in} input (only LHS\footnote{Left hand side}),
@@ -120,8 +122,9 @@ From external libraries other types are available:
   \item \vhdl{std_ulogic} same as the previous but \emph{unresolved}.
 \end{itemize}
 The above are from the \vhdl{ieee.std_logic_1164} library, and can take the
-values described in the following table.
-\begin{center}
+values described in table \ref{tab:std-logic-1164-types}.
+\begin{table}[h]
+  \centering
   \begin{tabularx}{\linewidth}{>{\ttfamily}c l X}
     \toprule
     Value & Meaning & Usage \\
@@ -137,29 +140,15 @@ values described in the following table.
     - & Don't care     & Allow minimization \\
     \bottomrule
   \end{tabularx}
-\end{center}
+  \caption{
+    Possible values for \vhdl{std_logic} signals.
+    \label{tab:std-logic-1164-types}
+  }
+\end{table}
 For the \emph{resolved} types, i.e. \vhdl{std_logic} types, when a signal is
-multiply driven the conflict is resolved according to the table below.
-Unresolved types will give a synthesization error.
-\begin{center}
-  \ttfamily
-  \begin{tabular}{c|ccccccccc}
-    \toprule
-      & U & X & 0 & 1 & Z & W & L & H & - \\
-    \midrule
-    U & U & U & U & U & U & U & U & U & U \\
-    X & U & X & X & X & X & X & X & X & X \\
-    0 & U & X & 0 & X & 0 & 0 & 0 & 0 & X \\
-    1 & U & X & X & 1 & 1 & 1 & 1 & 1 & X \\
-    Z & U & X & 0 & 1 & Z & W & L & H & X \\
-    W & U & X & 0 & 1 & W & W & W & W & X \\
-    L & U & X & 0 & 1 & L & W & L & W & X \\
-    H & U & X & 0 & 1 & H & W & W & H & X \\
-    - & U & X & X & X & X & X & X & X & X \\
-    \bottomrule
-  \end{tabular}
-\end{center}
-A good example is a tri-state bus: 
+multiply driven the conflict is resolved according to table
+\ref{tab:std-logic-1164-resolve}.  Unresolved types will give a synthesization
+error.  A good example is a tri-state bus: 
 \begin{lstlisting}[language=vhdl]
 architecture tristate of buscontrol is
 begin
@@ -174,6 +163,31 @@ begin
   end process;
 end architecture tristateout;
 \end{lstlisting}
+\begin{table}[h]
+  \centering
+  {
+    \ttfamily
+    \begin{tabular}{c|ccccccccc} 
+      \toprule
+      & U & X & 0 & 1 & Z & W & L & H & - \\
+      \midrule
+      U & U & U & U & U & U & U & U & U & U \\
+      X & U & X & X & X & X & X & X & X & X \\
+      0 & U & X & 0 & X & 0 & 0 & 0 & 0 & X \\
+      1 & U & X & X & 1 & 1 & 1 & 1 & 1 & X \\
+      Z & U & X & 0 & 1 & Z & W & L & H & X \\
+      W & U & X & 0 & 1 & W & W & W & W & X \\
+      L & U & X & 0 & 1 & L & W & L & W & X \\
+      H & U & X & 0 & 1 & H & W & W & H & X \\
+      - & U & X & X & X & X & X & X & X & X \\
+      \bottomrule
+    \end{tabular}
+  }
+  \caption{
+    Resolution table when a \vhdl{std_logic} signal is multiply driven.
+    \label{tab:std-logic-1164-resolve}
+  }
+\end{table}
 
 \subsection{Declarations} \label{sec:declarations}
 Before a \vhdl{begin} -- \vhdl{end} block, there is usually a list of declarations.
@@ -210,8 +224,8 @@ for `\reqph{label or {\tt all}}`: use entity `\reqph{library}`.`\reqph{entity}`(
 \end{lstlisting}
 
 \subsection{Concurrent Area}
-\begin{center}
-  \ttfamily
+\begin{figure}[h]
+  \centering
   \begin{tikzpicture}[
       node distance = 1mm,
       pin/.style = {
@@ -224,6 +238,7 @@ for `\reqph{label or {\tt all}}`: use entity `\reqph{library}`.`\reqph{entity}`(
         align = center,
       },
     ]
+    \ttfamily
 
     \node[
       draw = black, rectangle, fill = gray!20!white, thick,
@@ -259,7 +274,10 @@ for `\reqph{label or {\tt all}}`: use entity `\reqph{library}`.`\reqph{entity}`(
       ;
 
   \end{tikzpicture}
-\end{center}
+  \caption{
+    In the concurrent area statements are not interpreted sequentially.
+  }
+\end{figure}
 
 In the architecture between \vhdl{begin} and \vhdl{end}, the expressions
 are \emph{not} read sequentially, everything happens at the same time.
