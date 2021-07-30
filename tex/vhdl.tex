@@ -108,7 +108,8 @@ begin
 end architecture `\optionalph{name}`;
 \end{lstlisting}
 
-\subsection{Electric types}
+\subsection{Type system}
+\subsubsection{Electric types}
 VHDL provides some types such as
 \begin{itemize}
   \item \vhdl{boolean} true or false,
@@ -116,7 +117,7 @@ VHDL provides some types such as
   \item \vhdl{bit_vector} one dimensional array of bits,
   \item \vhdl{integer} 32-bit binary representation of a value.
 \end{itemize}
-From external libraries other types are available:
+From external (standard) libraries other types are available:
 \begin{itemize}
   \item \vhdl{std_logic} advanced logic with 9 states,
   \item \vhdl{std_ulogic} same as the previous but \emph{unresolved}.
@@ -127,7 +128,7 @@ values described in table \ref{tab:std-logic-1164-types}.
   \centering
   \begin{tabularx}{\linewidth}{>{\ttfamily}c l X}
     \toprule
-    Value & Meaning & Usage \\
+    \textrm{Value} & Meaning & Usage \\
     \midrule
     U & Uninitialized  & In the simulator \\
     X & Undefined      & Simulator sees a bus conflict \\
@@ -188,6 +189,170 @@ end architecture tristateout;
     \label{tab:std-logic-1164-resolve}
   }
 \end{table}
+
+\subsubsection{Arithmetic types}
+For arithmetic operations two more types \texttt{signed} and \texttt{unsigned}
+(as well as their unresolved equivalents \texttt{u\_signed} and
+\texttt{u\_unsigned}) can be imported (together with many others for ex.
+\texttt{natural}) from the library \texttt{ieee.numeric\_std}. Arithmetic types
+support the operations in table \ref{tab:arithmetic-type-ops}.
+\begin{table}[h]
+  \begin{tabularx}{\linewidth}{>{\ttfamily}c p{.3\linewidth} X}
+    \toprule
+    \textrm{Syntax} & Operator & Note \\
+    \midrule
+    + & Addition \\
+    - & Subtraction \\
+    abs() & Absolute value \\
+    * & Multiplication \\
+    / & Division & Typically no \\
+    ** & Power & Only powers of 2 \\
+    mod & Modulo & Only modulo of \(2^k\) \\
+    rem & Remainder & Only of division by \(2^k\) \\
+    = & Equality \\
+    /= & Inequality \\
+    <\textrm{,} > & Lower, greater \\
+    <=\textrm{,} >= & Lower, greater or equal & Same the assignment operator, however it is always clear from context. \\
+    \bottomrule
+  \end{tabularx}
+  \caption{
+    Arithmetic operations from the \texttt{numeric\_std} library.
+    \label{tab:arithmetic-type-ops}
+  }
+\end{table}
+
+\subsubsection{Array type}
+Arrays types (fields) of other types can be define with the following.
+\begin{lstlisting}[language=vhdl]
+type `\reqph{name}` is array (`\reqph{upper limit}` downto `\reqph{lower limit}`) of `\reqph{base type}`;
+\end{lstlisting}
+
+\subsubsection{Custom enumeration types}
+It is possible to create custom types, usually to create state machines.
+\begin{lstlisting}[language=vhdl]
+type `\reqph{name}` is (`\reqph{identifier}`, `\reqph{identifier}`, `\ph{\ldots}`);
+\end{lstlisting}
+
+\subsubsection{Physical types}
+For variables that represent physical dimensions it is possible to create
+values with units with the following:
+\begin{lstlisting}[language=vhdl]
+type `\reqph{name}` is range `\reqph{min}` to `\reqph{max}`
+units
+  `\reqph{base unit}`;
+  `\optionalph{multiples of base unit}`;
+end units;
+\end{lstlisting}
+for example:
+\begin{lstlisting}[language=vhdl]
+type CAPACITANCE is range 0 to 1E30
+units
+  pf;
+  nf = 1000 pf;
+  uf = 1000 nf;
+  mf = 1000 uf;
+end units;
+\end{lstlisting}
+
+\subsubsection{Reisizing vectors}
+VHDL has a function
+\begin{lstlisting}[language=vhdl]
+function resize(arg: signed; new_size: natural) return signed;
+\end{lstlisting}
+that allow to reisze vector types. When resizing a vector of signed type to a
+higher number of bits the \vhdl{resize} function cleverly fills the extra bits
+1s or 0s to not mess up the two's complement. Toghether with the \vhdl{resize}
+function an often used feature is the \vhdl{'length} attriubte, that returns
+the size (in bits) of the identifier.
+\begin{lstlisting}[language=vhdl]
+y <= resize(a, y'length);
+\end{lstlisting}
+
+\subsubsection{Type casting and conversion}
+When two signals have the same underlying type it is always possible to perform
+a \emph{type cast} using the following syntax.
+\begin{lstlisting}[language=vhdl]
+`\reqph{destination}` = `\reqph{type name}`(`\reqph{source}`);
+\end{lstlisting}
+For example:
+\begin{lstlisting}[language=vhdl]
+architecture behavoral of cast_example
+  signal a_int, b_int : 
+    std_logic_vector(3 downto 0);
+  signal s_int : unsigned(3 downto 0);
+begin
+  s_int <= unsigned(a_int) 
+         + unsigned(b_int);
+end architecture;
+\end{lstlisting}
+When the conversion is between signals with a different underlying type it is a
+(potentially lossy) \emph{type conversion}. The syntax for a conversion is:
+\begin{lstlisting}[language=vhdl]
+`\reqph{destination}` = to_`\reqph{type name}`(`\reqph{source}`);
+\end{lstlisting}
+\begin{figure}[h]
+  \pgfdeclarelayer{background}
+  \pgfsetlayers{background,main}
+  \begin{tikzpicture}[
+      font = \small\ttfamily,
+      box/.style = {
+        draw, thick, black, fill = lightgray!20,
+        rounded corners = 5pt,
+        align = center,
+        outer sep = 1mm,
+        inner sep = 3mm,
+      },
+      func/.style = {
+        black,
+        font = \small\ttfamily,
+        fill = white,
+        pos = .5,
+      },
+      afunc/.style = {
+        func, fill = hsr-blue20,
+      },
+    ]
+    \matrix[nodes = box, row sep = 2cm, column sep = 3mm]{
+      & \node (slv) {\vhdl{std_logic_vector}}; \\
+      \node (s) {\vhdl{signed}}; & & \node (u) {\vhdl{unsigned}}; \\[3mm]
+      & \node (int) {\vhdl{integer}}; \\
+    };
+
+    \begin{pgfonlayer}{background}
+      \coordinate (sr) at ($(s.south west)-(.2,.2)$);
+      \coordinate (ur) at ($(u.south east)+(.2,-.2)$);
+      \coordinate (slvr) at ($(slv.north)+(0,.2)$);
+
+      \fill[hsr-blue20]
+        (sr) to (ur) to (ur) |- (slvr) to (slvr) -| (sr) to cycle;
+    \end{pgfonlayer}
+
+    \draw[thick, ->]
+      (slv) edge[out = 180, in = 90] node[afunc] {\vhdl{signed()}} (s)
+      (slv) edge[out = 0, in = 90] node[afunc] {\vhdl{unsigned()}} (u)
+      %
+      (u) edge[out = 150, in = -60] (slv)
+      (s) edge[out = 30, in = -120] node[
+        afunc, pos = .7, xshift = 5mm,
+      ] {\vhdl{std_logic_vector()}} (slv)
+      %
+      (u) edge[out = 210, in = 60] (int)
+      (s) edge[out = -30, in = 120] node[
+        func, pos = .62, xshift = 5mm,
+      ] {\vhdl{to_integer()}} (int)
+      %
+      (int) edge[out = 180, in = 270] node[
+        func, pos = .85, xshift = 4mm,
+      ] {\vhdl{to_signed(}\reqph{v},\reqph{len})} (s)
+      (int) edge[out = 0, in = 270] node[
+        func, pos = .55, xshift = -3mm,
+      ] {\vhdl{to_unsigned(}\reqph{v},\reqph{len})} (u)
+      %
+      (s) edge[out = 10, in = 170] node[afunc, above] {\vhdl{unsigned()}} (u)
+      (u) edge[out = 195, in = -15] node[afunc, above = 1mm] {\vhdl{signed()}} (s)
+    ;
+  \end{tikzpicture}
+\end{figure}
 
 \subsection{Declarations} \label{sec:declarations}
 Before a \vhdl{begin} -- \vhdl{end} block, there is usually a list of declarations.
@@ -429,12 +594,6 @@ begin
   if falling_edge(clk) then
     ... end if;
 end process;
-\end{lstlisting}
-
-\subsection{Custom and arithmetic types}
-It is possible to create custom types, usually to create state machines.
-\begin{lstlisting}[language=vhdl]
-type `\reqph{name}` is (`\reqph{identifier}`, `\reqph{identifier}`, `\ph{\ldots}`);
 \end{lstlisting}
 
 \subsection{Pitfalls and RTL model}
