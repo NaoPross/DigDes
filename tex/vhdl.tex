@@ -205,7 +205,7 @@ support the operations in table \ref{tab:arithmetic-type-ops}.
     - & Subtraction \\
     abs() & Absolute value \\
     * & Multiplication \\
-    / & Division & Typically no \\
+    / & Division & Typically not available\\
     ** & Power & Only powers of 2 \\
     mod & Modulo & Only modulo of \(2^k\) \\
     rem & Remainder & Only of division by \(2^k\) \\
@@ -546,7 +546,7 @@ statements, the following applies:
   \item Neither selective (\vhdl{with}) nor conditional (\vhdl{when}) should be used.
     They are replaced with new sequential constructs (\vhdl{if} and \vhdl{case}).
   \item Signal assignments (with \vhdl{<=}) change their value
-    \emph{only at the end of the process}.
+    \emph{only at the next} \vhdl{wait for} \emph{statement or at the end of the process}.
   \item Variables on the other hand change as soon as they are assigned (with \vhdl{:=}).
 \end{itemize}
 And for good practice:
