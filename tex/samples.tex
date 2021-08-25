@@ -32,7 +32,7 @@ end entity `\reqph{name}`_tb;
 architecture tb of `\reqph{name}`_tb is
   -- simulator settings
   constant freq : natural := `\reqph{frequency}`;
-  constant time : time := 1 sec / freq;
+  constant T    : time := 1 sec / freq;
 
   -- component of DUT
   component `\reqph{name}` is

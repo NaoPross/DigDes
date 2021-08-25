@@ -3,6 +3,8 @@ To simulate a digial circuit it is possible to write test benches using VHDL.
 The code in this section may no longer be synthetisable, and is usually
 written by a \emph{test designer}.
 
+%% TODO: Talk about DUT, with an image?
+
 \subsection{Simulator}
 VHDL simulates digital systems using \emph{delta cycles}.
 
@@ -106,7 +108,7 @@ Assertions are used write tests to check that a signal is in the correct state.
 \end{lstlisting}
 The \vhdl{report} and \vhdl{severity} are optional but strongly advised. The
 severity can take one of 4 values: \vhdl{note}, \vhdl{warning}, \vhdl{error},
-\vhdl{failure}. Simulations can be configured to stop in when an error of the
+\vhdl{failure}. Simulations can be configured to stop when an error of the
 desired severity occurrs. An example:
 \begin{lstlisting}[language=vhdl]
 assert (tb_y = '0') report "error at vector 11" severity error;
