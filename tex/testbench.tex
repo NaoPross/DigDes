@@ -26,7 +26,7 @@ y <= `\reqph{expression}` after `\reqph{time}`;
 \end{lstlisting}
 %% TODO: tikz timing diagram
 
-\subsection{Generate stimuli}
+\subsection{Generate stimuli} \label{sec:stimuli}
 Simple stimuli (signals) are generated using processes. For example a clock
 signal done in three ways:
 \begin{lstlisting}[language=vhdl]
@@ -99,7 +99,7 @@ for i in 0 to 2**n -1 loop
 end loop;
 \end{lstlisting}
 
-\subsection{Assertions}
+\subsection{Assertions} \label{sec:assertions}
 Assertions are used write tests to check that a signal is in the correct state.
 \begin{lstlisting}[language=vhdl]
 `\optionalph{label}`: assert `\reqph{condition}` report `\reqph{string}` severity `\reqph{severity}`;

@@ -39,7 +39,7 @@ use `\reqph{library}`.`\reqph{element or {\tt all}}`;
 use `\reqph{library}`.`\reqph{package}`.`\reqph{element or {\tt all}}`;
 \end{lstlisting}
 
-\subsection{Entities and Architectures}
+\subsection{Entities and Architectures} \label{sec:vhdl:entities-arch}
 In VHDL the concept of \emph{entity} describes a black box of which only
 inputs and outputs are known. The internals of an entity are described through
 an \emph{architecture}. There can be multiple architectures for a single entity.
@@ -205,7 +205,7 @@ support the operations in table \ref{tab:arithmetic-type-ops}.
     - & Subtraction \\
     abs() & Absolute value \\
     * & Multiplication \\
-    / & Division & Typically no \\
+    / & Division & Typically not available\\
     ** & Power & Only powers of 2 \\
     mod & Modulo & Only modulo of \(2^k\) \\
     rem & Remainder & Only of division by \(2^k\) \\
@@ -325,6 +325,8 @@ When the conversion is between signals with a different underlying type it is a
 
       \fill[hsr-blue20]
         (sr) to (ur) to (ur) |- (slvr) to (slvr) -| (sr) to cycle;
+
+      \node[above, hsr-blue80] at (slvr) {array types};
     \end{pgfonlayer}
 
     \draw[thick, ->]
@@ -354,7 +356,7 @@ When the conversion is between signals with a different underlying type it is a
   \end{tikzpicture}
 \end{figure}
 
-\subsection{Declarations} \label{sec:declarations}
+\subsection{Declarations} \label{sec:vhdl:declarations}
 Before a \vhdl{begin} -- \vhdl{end} block, there is usually a list of declarations.
 A self evident examples are \emph{constants}.
 \begin{lstlisting}[language=vhdl]
@@ -388,7 +390,7 @@ architecture is used with the following expression.
 for `\reqph{label or {\tt all}}`: use entity `\reqph{library}`.`\reqph{entity}`(`\reqph{architecture}`);
 \end{lstlisting}
 
-\subsection{Concurrent Area}
+\subsection{Concurrent Area} \label{sec:vhdl:concurrent}
 \begin{figure}[h]
   \centering
   \begin{tikzpicture}[
@@ -499,7 +501,7 @@ Higher level conditions can be written in two ways.
   `\reqph{source}` when others;
 \end{lstlisting}
 
-\subsubsection{Components}
+\subsubsection{Components} \label{sec:vhdl:components}
 External components that have been previously declared can be used with the
 \vhdl{port map(}\reqph{assignments}\texttt{)} syntax. For example:
 \begin{lstlisting}[language=vhdl]
@@ -540,7 +542,7 @@ end process;
 Processes have a \emph{sensitivity list} that can be empty.  When a signal in
 the sensitivity list changes state, the process is executed.  With an empty
 sensitivity list, the process runs continuously.  In the declaration,
-everything from \S\ref{sec:declarations} applies. For the sequential
+everything from \S\ref{sec:vhdl:declarations} applies. For the sequential
 statements, the following applies:
 \begin{itemize}
   \item Neither selective (\vhdl{with}) nor conditional (\vhdl{when}) should be used.

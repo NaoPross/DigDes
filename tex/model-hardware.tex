@@ -128,10 +128,9 @@ the other axis while gravitating towards the origin (project goal).
 \end{figure}
 
 %% TODO: finish picture
-\iffalse
 Figure \ref{fig:asic-design-flow} shows a typical flow diagram of how an ASIC device
 is designed.
-\begin{figure}[h]
+\begin{figure}
   \begin{tikzpicture}[
       scale = .7,
       font = \small\ttfamily,
@@ -142,6 +141,8 @@ is designed.
         align = center,
         text width = 2.1cm,
         rounded corners = 5pt,
+        minimum height = 8mm,
+        outer sep = 1mm,
       },
       box/.style = {
         rectangle,
@@ -149,6 +150,7 @@ is designed.
         fill = lightgray!10,
         align = center,
         text width = 2.1cm,
+        outer sep = 1mm,
       },
       lib/.style = {
         rectangle,
@@ -156,6 +158,7 @@ is designed.
         fill = lightgray!10,
         align = center,
         text width = 2.1cm,
+        outer sep = 1mm,
       },
       ghost/.style = {
         outer sep = 0,
@@ -169,16 +172,54 @@ is designed.
       \node[ghost] (lineA) {}; & & \node[ghost] (lineB) {}; \\
       \node[box] (tm) {Technology Mapping}; \\
       \node[box] (ts) {Test Synthesis}; \\
-      \node[bubble] (gates) {}; & \node[box] (pres) {Prelayout Simulation}; \\
+      \node[bubble] (gates) {Gates}; & \node[box] (pres) {Prelayout Simulation}; \\
       \node[box] (l) {Layout}; & \node[box] (posts) {Postlayout Simulation}; \\
-      \node[bubble] (design) {}; & & \node[lib] {Technology Library}; \\
+      \node[bubble] (design) {Hardware}; & & \node[lib] (tech) {Technology Library}; \\
     };
+
+    \draw[thick, dashed, gray]
+      (lineA) to ++(-2,0)
+      (lineA) to (lineB) to ++(1,0)
+      node[rotate = 90, above = 5mm, anchor = west, text width = 3cm]  {\bfseries Technology Indipendent}
+      node[rotate = 90, below = 25mm, anchor = west, text width = 3cm] {\bfseries Technology Dependent};
+
+    \begin{scope}[ultra thick, ->, lightgray]
+      \draw (tech) to[in = -40, out = 180] (l);
+      \draw (tech) to[in = -30, out = 160] (posts);
+      \draw (tech) to[in =   0, out =  75] (ts);
+      \draw (tech) to[in =   0, out =  60] (tm);
+      \draw (tech) to[in = -10, out =  90] (pres);
+    \end{scope}
+
+    \begin{scope}[thick, ->]
+      \draw (tbd) |- (fs);
+      \draw (tbd) |- (pres);
+      \draw (tbd) |- (posts);
+
+      \draw (se) -- (so);
+
+      \draw (dd) |- (fs);
+      \draw (dd) -- (so);
+      \draw (so) -- (tm);
+      \draw (tm) -- (ts);
+      \draw (ts) -- (gates);
+
+      \draw (gates) -- (pres);
+      \draw (gates) to[out = -45, in = 135] (posts);
+
+      \draw (gates) -- (l);
+      \draw (l) -- (design);
+      \draw (design) to[out = 0, in = -90] (posts);
+    \end{scope}
+
   \end{tikzpicture}
   \caption{
     Design flow for an ASIC device.
     \label{fig:asic-design-flow}
   }
 \end{figure}
-\fi
 
 % \section{Hardware}
+%% TODO: hardware
+
+% vim:ts=2 sw=2 et:

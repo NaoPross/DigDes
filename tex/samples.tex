@@ -1,0 +1,77 @@
+\section{Samples / Templates}
+
+Below is a template for a simple VHDL file.
+
+\begin{lstlisting}[language=vhdl]
+library ieee;
+use ieee.std_logic_1164.all;
+-- declare entities (`\S\ref{sec:vhdl:entities-arch}`)
+entity `\reqph{name}` is
+  port(`\optionalph{pins}`);
+end entity `\reqph{name}`;
+-- declare architectures (`\S\ref{sec:vhdl:entities-arch}`)
+architecture `\reqph{name}` of `\reqph{entity name}` is
+  -- internal signals (`\S\ref{sec:vhdl:declarations}`)
+  -- other components (`\S\ref{sec:vhdl:components}`)
+  -- declare custom types (`\S\ref{sec:fsm:encode}`)
+  -- variables of custom type (`\S\ref{sec:fsm:encode}`)
+begin
+  -- assignments and processes (`\S\ref{sec:vhdl:concurrent}`)
+end architecture `\reqph{name}`;
+\end{lstlisting}
+And for a test bench
+\begin{lstlisting}[language=vhdl]
+library ieee;
+use ieee.std_logic_1164.all;
+
+-- declare entities (`\S\ref{sec:vhdl:entities-arch}`)
+entity `\reqph{name}`_tb is
+  -- nothing here
+end entity `\reqph{name}`_tb;
+
+architecture tb of `\reqph{name}`_tb is
+  -- simulator settings
+  constant freq : natural := `\reqph{frequency}`;
+  constant time : time := 1 sec / freq;
+
+  -- component of DUT
+  component `\reqph{name}` is
+    port(
+      clk : in std_ulogic;
+      `\optionalph{other I/O}`
+    );
+  end component `\reqph{name}`;
+
+  signal clk_tb : std_ulogic;
+  -- more signals for inputs and outputs
+begin
+
+  dut: component `\reqph{name}`
+    port map(
+      clk => clk_tb;
+      `\reqph{other I/O}`);
+
+    clk_generator: process
+      -- generate clock (`\S\ref{sec:stimuli}`)
+      clk_tb <= '1'; wait for (T/2);
+      clk_tb <= '0'; wait for (T/2);
+    end process;
+
+    stimuli: process
+    begin
+      -- generate stimuli (`\S\ref{sec:stimuli}`)
+      -- for loops, after, etc.
+    end;
+
+    response: process
+    -- constants for expected outputs
+    begin
+      wait for 0.9 * T;
+      -- assertions (`\S\ref{sec:assertions}`)
+      wait for T;
+    end process;
+
+end architecture tb;
+
+\end{lstlisting}
+% vim:ts=2 sw=2 et:

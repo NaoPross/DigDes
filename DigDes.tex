@@ -59,6 +59,8 @@
 \title{\texttt{\themodule}: Digital Design}
 \date{\thesemester}
 
+\setlength{\droptitle}{-1.3cm}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Document
 
@@ -66,10 +68,21 @@
 
 \pagenumbering{roman}
 \maketitle
+
+\begin{abstract}
+  This document is ``open source'', you can find the \LaTeX{} sources at
+  \url{https://github.com/NaoPross/DigDes}. All diagrams were made with TikZ.
+  The content is based on the material of Prof. Dr. Zbinden, from the course
+  \emph{Digital Design} at the University of Applied Sciences Eastern
+  Switzerland (OST). If you find typos or errors you can open an PR on Github
+  or mail me at \href{mailto:\theauthoremail}{\texttt{\theauthoremail}} if I'm still
+  around (until spring 2022) or \href{mailto:np@0hm.ch}{\texttt{np@0hm.ch}}.
+\end{abstract}
+
 \tableofcontents
 
 \section*{License}
-\doclicenseThis
+\doclicenseThis{}
 
 % \newpage
 \twocolumn
@@ -81,5 +94,7 @@
 \input{tex/vhdl}
 \input{tex/statemachines}
 \input{tex/testbench}
+\input{tex/samples}
 
 \end{document}
+% vim:ts=2 sw=2 et:
