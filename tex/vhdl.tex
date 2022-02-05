@@ -363,7 +363,7 @@ A self evident examples are \emph{constants}.
 constant `\reqph{name}` : `\reqph{type}` := `\reqph{value}`;
 \end{lstlisting}
 
-Next, \emph{signals} and \emph{variables}. Signals is are wires, they can only be
+Next, \emph{signals} and \emph{variables}. Signals are wires, they can only be
 connected and do not have an initial state. Variables can be assigned like in
 software, but can cause the synthesization of an unwanted D-Latch.
 
@@ -508,7 +508,7 @@ External components that have been previously declared can be used with the
 -- declaration
 component flipflop is
   port(
-    clk, set, rst : in  std_ulogic,
+    clk, set, rst : in  std_ulogic;
     Q, Qn         : out std_ulogic 
   );
 end component flipflop;
